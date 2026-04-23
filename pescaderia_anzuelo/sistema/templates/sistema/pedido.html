@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Pedido #{{ venta.id }} - Pescadería El Anzuelo</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'sistema/pedido.css' %}">
+</head>
+<body>
+    <div class="ticket">
+        <div class="head">
+            <img src="{% static 'sistema/logo.jpeg' %}" alt="Logo Pescadería El Anzuelo">
+            <div>
+                <div class="title">Pescadería El Anzuelo</div>
+                <div class="sub">Ticket de pedido</div>
+            </div>
+        </div>
+
+        <div class="content">
+            <div class="meta">
+                <div class="box">
+                    <div class="k">Pedido</div>
+                    <div class="v">#{{ venta.id }}</div>
+                </div>
+                <div class="box">
+                    <div class="k">Fecha</div>
+                    <div class="v">{{ venta.fecha|date:"d/m/Y H:i" }}</div>
+                </div>
+                <div class="box">
+                    <div class="k">Mesa</div>
+                    <div class="v">{{ venta.mesa }}</div>
+                </div>
+                <div class="box">
+                    <div class="k">Cliente</div>
+                    <div class="v">{{ venta.cliente.nombre }}</div>
+                </div>
+            </div>
+
+            <div class="ticket-section-title">Detalle</div>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>Producto</th>
+                        <th>Cant.</th>
+                        <th>Subtotal</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for d in detalles %}
+                        <tr>
+                            <td class="ticket-prod">{{ d.producto.nombre }}</td>
+                            <td>{{ d.cantidad }}</td>
+                            <td class="ticket-subtotal">Bs {{ d.subtotal }}</td>
+                        </tr>
+                    {% empty %}
+                        <tr>
+                            <td colspan="3" class="ticket-empty">Sin detalles</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+
+            <div class="total">
+                <div>Total</div>
+                <div>Bs {{ venta.total }}</div>
+            </div>
+
+            <div class="actions no-print">
+                <button class="btn primary" type="button" id="printBtn">Imprimir pedido</button>
+                <a class="btn" href="{% url 'inicio' %}">Volver</a>
+            </div>
+        </div>
+    </div>
+
+    <script src="{% static 'sistema/pedido.js' %}" defer></script>
+</body>
+</html>

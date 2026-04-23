@@ -1,0 +1,455 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Productos</title>
+    {% load static %}
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+        :root {
+            --blue:        #2563eb;
+            --blue-dark:   #1d4ed8;
+            --blue-light:  #eff6ff;
+            --blue-mid:    #bfdbfe;
+            --danger:      #ef4444;
+            --danger-light:#fef2f2;
+            --edit:        #2563eb;
+            --edit-light:  #eff6ff;
+            --bg:          #e8eef7;
+            --surface:     #ffffff;
+            --border:      #dde3f0;
+            --text:        #0f172a;
+            --text-muted:  #64748b;
+            --text-hint:   #94a3b8;
+            --radius:      8px;
+            --radius-lg:   12px;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+        }
+
+        /* ── Header ── */
+        header {
+            background: var(--surface);
+            border-bottom: 1px solid var(--border);
+            padding: 0 2rem;
+            height: 62px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: sticky;
+            top: 0;
+            z-index: 50;
+        }
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .brand img {
+            height: 36px;
+            width: 36px;
+            object-fit: contain;
+        }
+        .brand-name  { font-size: 15px; font-weight: 600; color: var(--text); }
+        .brand-sub   { font-size: 11px; color: var(--text-muted); margin-top: 1px; }
+        .header-links { display: flex; align-items: center; gap: 4px; }
+        .header-links a {
+            font-size: 13px;
+            color: var(--text-muted);
+            text-decoration: none;
+            padding: 5px 10px;
+            border-radius: 6px;
+            transition: background .12s, color .12s;
+        }
+        .header-links a:hover { background: var(--blue-light); color: var(--blue); }
+        .header-links .sep { color: var(--border); font-size: 18px; }
+
+        /* ── Page ── */
+        .page { max-width: 980px; margin: 0 auto; padding: 2rem 1.25rem; }
+
+        .page-top {
+            display: flex;
+            align-items: flex-end;
+            justify-content: space-between;
+            margin-bottom: 1.75rem;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+        .page-top h1 { font-size: 22px; font-weight: 600; color: var(--text); }
+        .page-top p  { font-size: 13px; color: var(--text-muted); margin-top: 3px; }
+
+        /* ── Botón agregar ── */
+        .btn-add {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 9px 18px;
+            background: var(--blue);
+            color: #fff;
+            font-size: 13px;
+            font-weight: 600;
+            border-radius: var(--radius);
+            text-decoration: none;
+            transition: background .13s, transform .1s;
+            white-space: nowrap;
+        }
+        .btn-add:hover  { background: var(--blue-dark); }
+        .btn-add:active { transform: scale(0.98); }
+        .btn-add svg    { width: 14px; height: 14px; stroke: #fff; fill: none; stroke-width: 2.5; stroke-linecap: round; }
+
+        /* ── Section ── */
+        .section { margin-bottom: 2rem; }
+        .section-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 12px;
+        }
+        .section-header h2 {
+            font-size: 13px;
+            font-weight: 600;
+            letter-spacing: .06em;
+            text-transform: uppercase;
+            color: var(--text-muted);
+        }
+        .section-header .count {
+            font-size: 11px;
+            font-weight: 600;
+            padding: 2px 8px;
+            border-radius: 20px;
+            background: var(--blue-light);
+            color: var(--blue);
+        }
+        .divider {
+            flex: 1;
+            height: 1px;
+            background: var(--border);
+        }
+
+        /* ── Tabla ── */
+        .table-wrap {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            overflow: hidden;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        thead th {
+            padding: 11px 16px;
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: .06em;
+            color: var(--text-muted);
+            background: #f8faff;
+            border-bottom: 1px solid var(--border);
+            text-align: left;
+        }
+        thead th:last-child { text-align: right; }
+        tbody tr {
+            border-bottom: 1px solid var(--border);
+            transition: background .1s;
+        }
+        tbody tr:last-child { border-bottom: none; }
+        tbody tr:hover { background: #f8faff; }
+        td {
+            padding: 12px 16px;
+            font-size: 13px;
+            color: var(--text);
+            vertical-align: middle;
+        }
+        td:last-child { text-align: right; }
+
+        /* ── Celda imagen ── */
+        .td-img { width: 64px; }
+        .img-box {
+            width: 48px;
+            height: 48px;
+            border-radius: var(--radius);
+            overflow: hidden;
+            background: var(--blue-light);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 22px;
+            flex-shrink: 0;
+            border: 1px solid var(--blue-mid);
+        }
+        .img-box img { width: 100%; height: 100%; object-fit: cover; }
+
+        /* ── Nombre y descripción ── */
+        .prod-name { font-weight: 500; color: var(--text); }
+        .prod-sub  { font-size: 11px; color: var(--text-hint); margin-top: 2px; }
+
+        /* ── Precio ── */
+        .price {
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--blue);
+            white-space: nowrap;
+        }
+
+        /* ── Badge tipo bebida ── */
+        .badge {
+            display: inline-block;
+            font-size: 11px;
+            font-weight: 500;
+            padding: 3px 9px;
+            border-radius: 20px;
+            background: var(--blue-light);
+            color: var(--blue);
+            border: 1px solid var(--blue-mid);
+        }
+
+        /* ── Acciones ── */
+        .actions { display: flex; justify-content: flex-end; gap: 6px; }
+        .btn-icon {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 5px;
+            padding: 6px 12px;
+            border-radius: var(--radius);
+            font-size: 12px;
+            font-weight: 500;
+            text-decoration: none;
+            transition: background .12s, color .12s, transform .1s;
+            border: 1px solid transparent;
+            white-space: nowrap;
+        }
+        .btn-icon svg { width: 13px; height: 13px; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; fill: none; }
+        .btn-icon:active { transform: scale(0.97); }
+
+        .btn-edit {
+            background: var(--edit-light);
+            color: var(--edit);
+            border-color: var(--blue-mid);
+        }
+        .btn-edit:hover { background: var(--blue-mid); }
+
+        .btn-del {
+            background: var(--danger-light);
+            color: var(--danger);
+            border-color: #fecaca;
+        }
+        .btn-del:hover { background: #fecaca; }
+
+        /* ── Fila vacía ── */
+        .empty-row td {
+            text-align: center;
+            padding: 2rem;
+            color: var(--text-hint);
+            font-size: 13px;
+        }
+        .empty-icon { font-size: 28px; display: block; margin-bottom: 6px; }
+
+        /* ── Footer back ── */
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 13px;
+            color: var(--text-muted);
+            text-decoration: none;
+            padding: 7px 12px;
+            border-radius: var(--radius);
+            border: 1px solid var(--border);
+            background: var(--surface);
+            transition: background .12s, color .12s;
+        }
+        .back-link:hover { background: var(--blue-light); color: var(--blue); border-color: var(--blue-mid); }
+        .back-link svg { width: 13px; height: 13px; stroke: currentColor; stroke-width: 2.5; fill: none; stroke-linecap: round; stroke-linejoin: round; }
+
+        @media (max-width: 580px) {
+            .page-top { flex-direction: column; align-items: flex-start; }
+            .btn-add  { width: 100%; justify-content: center; }
+            td { padding: 10px 10px; }
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <div class="brand">
+        <img src="{% static 'sistema/logo.jpeg' %}" alt="Logo">
+        <div>
+            <div class="brand-name">Pescadería El Anzuelo</div>
+            <div class="brand-sub">Gestión de productos</div>
+        </div>
+    </div>
+    <div class="header-links">
+        <a href="{% url 'admin_panel' %}" class="btn">← Volver</a>
+        <span class="sep">|</span>
+        <a href="/logout/">Cerrar sesión</a>
+    </div>
+</header>
+
+<div class="page">
+
+    <div class="page-top">
+        <div>
+            <h1>Productos</h1>
+            <p>Administra los platos y bebidas del menú.</p>
+        </div>
+        <a href="{% url 'agregar_producto' %}" class="btn-add">
+            <svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            Agregar producto
+        </a>
+    </div>
+
+    <!-- ── Platos ── -->
+    <div class="section">
+        <div class="section-header">
+            <h2>🍽 Platos</h2>
+            <span class="count">
+                {% with total=productos|length %}{{ total }}{% endwith %}
+            </span>
+            <div class="divider"></div>
+        </div>
+
+        <div class="table-wrap">
+            <table>
+                <thead>
+                    <tr>
+                        <th class="td-img"></th>
+                        <th>Nombre</th>
+                        <th>Precio</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for p in productos %}
+                    {% if p.categoria == "plato" %}
+                    <tr>
+                        <td class="td-img">
+                            <div class="img-box">
+                                {% if p.imagen %}
+                                    <img src="{{ p.imagen.url }}" alt="{{ p.nombre }}">
+                                {% else %}
+                                    🍽
+                                {% endif %}
+                            </div>
+                        </td>
+                        <td>
+                            <div class="prod-name">{{ p.nombre }}</div>
+                            {% if p.descripcion %}
+                                <div class="prod-sub">{{ p.descripcion|truncatechars:48 }}</div>
+                            {% endif %}
+                        </td>
+                        <td><span class="price">Bs {{ p.precio }}</span></td>
+                        <td>
+                            <div class="actions">
+                                <a href="{% url 'editar_producto' p.id %}" class="btn-icon btn-edit">
+                                    <svg viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+                                    Editar
+                                </a>
+                                <a href="{% url 'eliminar_producto' p.id %}" class="btn-icon btn-del"
+                                   onclick="return confirm('¿Eliminar « {{ p.nombre }} »?')">
+                                    <svg viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6M14 11v6"/><path d="M9 6V4h6v2"/></svg>
+                                    Eliminar
+                                </a>
+                            </div>
+                        </td>
+                    </tr>
+                    {% endif %}
+                    {% empty %}
+                    <tr class="empty-row">
+                        <td colspan="4">
+                            <span class="empty-icon">🍽</span>
+                            No hay platos registrados.
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- ── Bebidas ── -->
+    <div class="section">
+        <div class="section-header">
+            <h2>🥤 Bebidas</h2>
+            <div class="divider"></div>
+        </div>
+
+        <div class="table-wrap">
+            <table>
+                <thead>
+                    <tr>
+                        <th class="td-img"></th>
+                        <th>Nombre</th>
+                        <th>Tipo</th>
+                        <th>Precio</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for p in productos %}
+                    {% if p.categoria == "bebida" %}
+                    <tr>
+                        <td class="td-img">
+                            <div class="img-box">
+                                {% if p.imagen %}
+                                    <img src="{{ p.imagen.url }}" alt="{{ p.nombre }}">
+                                {% else %}
+                                    🥤
+                                {% endif %}
+                            </div>
+                        </td>
+                        <td>
+                            <div class="prod-name">{{ p.nombre }}</div>
+                            {% if p.descripcion %}
+                                <div class="prod-sub">{{ p.descripcion|truncatechars:48 }}</div>
+                            {% endif %}
+                        </td>
+                        <td><span class="badge">{{ p.bebida_tipo }}</span></td>
+                        <td><span class="price">Bs {{ p.precio }}</span></td>
+                        <td>
+                            <div class="actions">
+                                <a href="{% url 'editar_producto' p.id %}" class="btn-icon btn-edit">
+                                    <svg viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+                                    Editar
+                                </a>
+                                <a href="{% url 'eliminar_producto' p.id %}" class="btn-icon btn-del"
+                                   onclick="return confirm('¿Eliminar « {{ p.nombre }} »?')">
+                                    <svg viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6M14 11v6"/><path d="M9 6V4h6v2"/></svg>
+                                    Eliminar
+                                </a>
+                            </div>
+                        </td>
+                    </tr>
+                    {% endif %}
+                    {% empty %}
+                    <tr class="empty-row">
+                        <td colspan="5">
+                            <span class="empty-icon">🥤</span>
+                            No hay bebidas registradas.
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <a href="{% url 'admin_panel' %}" class="back-link">
+        <svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
+        Volver al panel
+    </a>
+
+</div>
+
+</body>
+</html>

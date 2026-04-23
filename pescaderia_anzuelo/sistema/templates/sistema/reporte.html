@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Reporte de ventas - Pescadería El Anzuelo</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'sistema/reporte.css' %}">
+</head>
+<body>
+    <header class="top">
+        <div class="brand">
+            <img src="{% static 'sistema/logo.jpeg' %}" alt="Logo">
+            <div>
+                <div class="title">Reporte de ventas</div>
+                <div class="subtitle">Pescadería El Anzuelo</div>
+            </div>
+        </div>
+        <div class="actions">
+            <a class="link" href="{% url 'inicio' %}">Volver al Home</a>
+            <a class="link" href="{% url 'logout' %}">Salir</a>
+        </div>
+    </header>
+
+    <main class="wrap">
+        <section class="card">
+            <div class="card-h">
+                <h2>Filtro por fecha</h2>
+            </div>
+            <form class="filter" method="GET" action="{% url 'reporte_ventas' %}">
+                <label>
+                    Fecha
+                    <input type="date" name="fecha" value="{{ fecha|date:'Y-m-d' }}">
+                </label>
+                <button type="submit" class="btn primary">Actualizar</button>
+                <button type="button" class="btn" onclick="window.print()">Imprimir</button>
+            </form>
+        </section>
+
+        <section class="grid">
+            <div class="card">
+                <div class="card-h">
+                    <h2>Resumen del día</h2>
+                    <div class="small">{{ fecha|date:"d/m/Y" }}</div>
+                </div>
+                <div class="kpis">
+                    <div class="kpi">
+                        <div class="k">Total vendido</div>
+                        <div class="v">Bs {{ resumen.total_vendido|default:"0.00" }}</div>
+                    </div>
+                    <div class="kpi">
+                        <div class="k">Cantidad de ventas</div>
+                        <div class="v">{{ resumen.cantidad_ventas|default:"0" }}</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-h">
+                    <h2>Productos vendidos</h2>
+                    <div class="small">Ordenado por subtotal</div>
+                </div>
+
+                <div class="table-wrap">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Producto</th>
+                                <th>Tipo</th>
+                                <th>Unid.</th>
+                                <th>Subtotal</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for d in detalles %}
+                                <tr>
+                                    <td class="strong">{{ d.producto__nombre }}</td>
+                                    <td>
+                                        {% if d.producto__categoria == 'bebida' %}
+                                            Bebida ({{ d.producto__bebida_tipo }})
+                                        {% else %}
+                                            Plato
+                                        {% endif %}
+                                    </td>
+                                    <td>{{ d.unidades }}</td>
+                                    <td class="money">Bs {{ d.subtotal }}</td>
+                                </tr>
+                            {% empty %}
+                                <tr>
+                                    <td colspan="4" class="muted">No hay ventas en esta fecha.</td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+    </main>
+</body>
+</html>
+

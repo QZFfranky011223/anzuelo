@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Pescadería El Anzuelo - Home</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'sistema/home.css' %}">
+</head>
+<body>
+    <header>
+        <div class="brand">
+            <img src="{% static 'sistema/logo.jpeg' %}" alt="Logo">
+            <div>
+                <div class="title">Pescadería El Anzuelo</div>
+                <div class="subtitle">Pedidos por mesa - Platos y Bebidas</div>
+            </div>
+        </div>
+        <div class="no-print">
+            <a href="/login/" class="link-blue">Cerrar sesión</a>
+            <span class="divider">|</span>
+            <a href="{% url 'reporte_ventas' %}" class="link-blue">Reporte</a>
+        </div>
+    </header>
+
+    <div class="wrap">
+        <input type="hidden" id="mesasTotal" value="{{ mesas_total }}">
+        <div class="grid">
+            <section class="card" aria-label="Mesas">
+                <div class="card-h">
+                    <h2>Selecciona una mesa</h2>
+                    <div class="small">Total: {{ mesas_total }}</div>
+                </div>
+                <div class="mesa-grid" id="mesaGrid"></div>
+            </section>
+
+            <section class="card" aria-label="Menú y pedido">
+                <div class="card-h">
+                    <h2>Menú y carrito</h2>
+                    <div class="small">Mesa seleccionada: <span id="mesaSelected">1</span></div>
+                </div>
+
+                <div class="menu">
+                    <div class="tabs no-print">
+                        <button class="tab active" type="button" id="tabPlatos">Platos</button>
+                        <button class="tab" type="button" id="tabSodas">Sodas</button>
+                        <button class="tab" type="button" id="tabJugos">Jugos naturales</button>
+                        <button class="tab" type="button" id="tabOtras">Otras bebidas</button>
+                    </div>
+
+                    <div class="productos" id="productosPlatos">
+                        {% for p in platos %}
+                            <div class="producto">
+                                <div class="producto-top">
+                                    {% if p.imagen %}
+                                        <img src="{{ p.imagen.url }}" alt="{{ p.nombre }}">
+                                    {% else %}
+                                        <img src="{% static 'sistema/logo.png' %}" alt="Logo">
+                                    {% endif %}
+                                    <div>
+                                        <h3>{{ p.nombre }}</h3>
+                                        <p>{{ p.descripcion }}</p>
+                                        <div class="price">Bs {{ p.precio }}</div>
+                                        <div class="add-action">
+                                            <button class="btn primary no-print add-btn" type="button"
+                                                    data-pid="{{ p.id }}"
+                                                    data-precio="{{ p.precio }}"
+                                                    data-nombre="{{ p.nombre|escapejs }}">
+                                                Agregar
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        {% empty %}
+                            <div class="empty-msg">No hay platos registrados.</div>
+                        {% endfor %}
+                    </div>
+
+                    <div class="productos is-hidden" id="productosSodas">
+                        {% for p in sodas %}
+                            <div class="producto">
+                                <div class="producto-top">
+                                    {% if p.imagen %}
+                                        <img src="{{ p.imagen.url }}" alt="{{ p.nombre }}">
+                                    {% else %}
+                                        <img src="{% static 'sistema/logo.png' %}" alt="Logo">
+                                    {% endif %}
+                                    <div>
+                                        <h3>{{ p.nombre }}</h3>
+                                        <p>{{ p.descripcion }}</p>
+                                        <div class="price">Bs {{ p.precio }}</div>
+                                        <div class="add-action">
+                                            <button class="btn primary no-print add-btn" type="button"
+                                                    data-pid="{{ p.id }}"
+                                                    data-precio="{{ p.precio }}"
+                                                    data-nombre="{{ p.nombre|escapejs }}">
+                                                Agregar
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        {% empty %}
+                            <div class="empty-msg">No hay sodas registradas.</div>
+                        {% endfor %}
+                    </div>
+
+                    <div class="productos is-hidden" id="productosJugos">
+                        {% for p in jugos %}
+                            <div class="producto">
+                                <div class="producto-top">
+                                    {% if p.imagen %}
+                                        <img src="{{ p.imagen.url }}" alt="{{ p.nombre }}">
+                                    {% else %}
+                                        <img src="{% static 'sistema/logo.png' %}" alt="Logo">
+                                    {% endif %}
+                                    <div>
+                                        <h3>{{ p.nombre }}</h3>
+                                        <p>{{ p.descripcion }}</p>
+                                        <div class="price">Bs {{ p.precio }}</div>
+                                        <div class="add-action">
+                                            <button class="btn primary no-print add-btn" type="button"
+                                                    data-pid="{{ p.id }}"
+                                                    data-precio="{{ p.precio }}"
+                                                    data-nombre="{{ p.nombre|escapejs }}">
+                                                Agregar
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        {% empty %}
+                            <div class="empty-msg">No hay jugos naturales registrados.</div>
+                        {% endfor %}
+                    </div>
+
+                    <div class="productos is-hidden" id="productosOtras">
+                        {% for p in otras_bebidas %}
+                            <div class="producto">
+                                <div class="producto-top">
+                                    {% if p.imagen %}
+                                        <img src="{{ p.imagen.url }}" alt="{{ p.nombre }}">
+                                    {% else %}
+                                        <img src="{% static 'sistema/logo.png' %}" alt="Logo">
+                                    {% endif %}
+                                    <div>
+                                        <h3>{{ p.nombre }}</h3>
+                                        <p>{{ p.descripcion }}</p>
+                                        <div class="price">Bs {{ p.precio }}</div>
+                                        <div class="add-action">
+                                            <button class="btn primary no-print add-btn" type="button"
+                                                    data-pid="{{ p.id }}"
+                                                    data-precio="{{ p.precio }}"
+                                                    data-nombre="{{ p.nombre|escapejs }}">
+                                                Agregar
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        {% empty %}
+                            <div class="empty-msg">No hay otras bebidas registradas.</div>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <div class="cart">
+                    {% if error %}
+                        <div class="error">{{ error }}</div>
+                    {% endif %}
+
+                    <div class="no-print cart-title">Carrito</div>
+                    <div class="cart-list" id="cartList"></div>
+
+                    <div class="total">
+                        <div>Total</div>
+                        <div id="cartTotal">Bs 0.00</div>
+                    </div>
+
+                    <form class="form no-print" method="POST" action="{% url 'crear_pedido' %}" id="orderForm">
+                        {% csrf_token %}
+                        <input type="hidden" name="mesa" id="mesaInput" value="1">
+                        <input type="hidden" name="cart" id="cartInput" value="[]">
+
+                        <div class="field">
+                            <label>Nombre del cliente</label>
+                            <input type="text" name="cliente_nombre" placeholder="Ej: Juan" required>
+                        </div>
+                        <div class="field">
+                            <label>Teléfono</label>
+                            <input type="text" name="cliente_telefono" placeholder="Ej: 70123456" required>
+                        </div>
+
+                        <button class="btn primary" type="submit">Generar pedido</button>
+                        <button class="btn" type="button" id="printMesaBtn">Imprimir pedido de mesa</button>
+                    </form>
+                </div>
+            </section>
+        </div>
+    </div>
+
+    <script src="{% static 'sistema/home.js' %}" defer></script>
+</body>
+</html>

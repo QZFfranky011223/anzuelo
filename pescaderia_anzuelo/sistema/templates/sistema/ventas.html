@@ -1,0 +1,487 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Reporte de Ventas - Pescadería El Anzuelo</title>
+    {% load static %}
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+        :root {
+            --blue:       #2563eb;
+            --blue-dark:  #1d4ed8;
+            --blue-light: #eff6ff;
+            --blue-mid:   #bfdbfe;
+            --green:      #16a34a;
+            --green-light:#f0fdf4;
+            --green-mid:  #bbf7d0;
+            --bg:         #e8eef7;
+            --surface:    #ffffff;
+            --border:     #dde3f0;
+            --text:       #0f172a;
+            --text-muted: #64748b;
+            --text-hint:  #94a3b8;
+            --radius:     8px;
+            --radius-lg:  12px;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+        }
+
+        /* ── Header ── */
+        header {
+            background: var(--surface);
+            border-bottom: 1px solid var(--border);
+            padding: 0 2rem;
+            height: 62px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: sticky;
+            top: 0;
+            z-index: 50;
+        }
+        .brand { display: flex; align-items: center; gap: 10px; }
+        .brand img { height: 36px; width: 36px; object-fit: contain; }
+        .brand-name { font-size: 15px; font-weight: 600; }
+        .brand-sub  { font-size: 11px; color: var(--text-muted); margin-top: 1px; }
+        .header-links { display: flex; align-items: center; gap: 4px; }
+        .header-links a {
+            font-size: 13px; color: var(--text-muted); text-decoration: none;
+            padding: 5px 10px; border-radius: 6px; transition: background .12s, color .12s;
+        }
+        .header-links a:hover { background: var(--blue-light); color: var(--blue); }
+        .header-links .sep { color: var(--border); }
+
+        /* ── Page ── */
+        .page { max-width: 1000px; margin: 0 auto; padding: 2rem 1.25rem; }
+
+        /* ── Top ── */
+        .page-top {
+            display: flex;
+            align-items: flex-end;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 14px;
+            margin-bottom: 1.75rem;
+        }
+        .page-top h1 { font-size: 22px; font-weight: 600; }
+        .page-top p  { font-size: 13px; color: var(--text-muted); margin-top: 3px; }
+
+        /* ── Métricas ── */
+        .metrics {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+            gap: 12px;
+            margin-bottom: 1.75rem;
+        }
+        .metric {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            padding: 1rem 1.25rem;
+        }
+        .metric-label {
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: .06em;
+            color: var(--text-muted);
+            margin-bottom: 6px;
+        }
+        .metric-value {
+            font-size: 24px;
+            font-weight: 600;
+            color: var(--text);
+            line-height: 1;
+        }
+        .metric-sub {
+            font-size: 11px;
+            color: var(--text-hint);
+            margin-top: 4px;
+        }
+        .metric.accent .metric-value { color: var(--blue); }
+        .metric.green  .metric-value { color: var(--green); }
+
+        /* ── Filtro / búsqueda ── */
+        .toolbar {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 12px;
+            flex-wrap: wrap;
+        }
+        .search-wrap {
+            position: relative;
+            flex: 1;
+            min-width: 180px;
+        }
+        .search-wrap svg {
+            position: absolute;
+            left: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 14px; height: 14px;
+            stroke: var(--text-hint);
+            fill: none;
+            stroke-width: 2;
+            stroke-linecap: round;
+        }
+        .search-wrap input {
+            width: 100%;
+            padding: 8px 12px 8px 32px;
+            font-family: 'Inter', sans-serif;
+            font-size: 13px;
+            color: var(--text);
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            outline: none;
+            transition: border-color .15s, box-shadow .15s;
+        }
+        .search-wrap input:focus {
+            border-color: var(--blue);
+            box-shadow: 0 0 0 3px rgba(37,99,235,.10);
+        }
+        .btn-export {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 8px 14px;
+            background: var(--blue-light);
+            color: var(--blue);
+            font-size: 13px;
+            font-weight: 600;
+            border-radius: var(--radius);
+            border: 1px solid var(--blue-mid);
+            cursor: pointer;
+            text-decoration: none;
+            transition: background .12s;
+            white-space: nowrap;
+        }
+        .btn-export:hover { background: var(--blue-mid); }
+        .btn-export svg { width: 13px; height: 13px; stroke: var(--blue); fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+
+        /* ── Tabla ── */
+        .table-wrap {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            overflow: hidden;
+        }
+        table { width: 100%; border-collapse: collapse; }
+        thead th {
+            padding: 11px 16px;
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: .06em;
+            color: var(--text-muted);
+            background: #f8faff;
+            border-bottom: 1px solid var(--border);
+            text-align: left;
+            white-space: nowrap;
+            cursor: pointer;
+            user-select: none;
+        }
+        thead th:hover { color: var(--blue); }
+        thead th .sort-icon {
+            display: inline-block;
+            margin-left: 4px;
+            opacity: .35;
+            font-style: normal;
+            font-size: 10px;
+        }
+        thead th.sorted .sort-icon { opacity: 1; color: var(--blue); }
+
+        tbody tr {
+            border-bottom: 1px solid var(--border);
+            transition: background .1s;
+        }
+        tbody tr:last-child { border-bottom: none; }
+        tbody tr:hover { background: #f8faff; }
+        td { padding: 13px 16px; font-size: 13px; color: var(--text); vertical-align: middle; }
+
+        /* ── Celdas especiales ── */
+        .td-num {
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--blue);
+            white-space: nowrap;
+        }
+        .td-qty {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 32px;
+            height: 24px;
+            padding: 0 8px;
+            border-radius: 20px;
+            background: var(--blue-light);
+            color: var(--blue);
+            font-size: 12px;
+            font-weight: 600;
+            border: 1px solid var(--blue-mid);
+        }
+        .td-date {
+            color: var(--text-muted);
+            font-size: 12px;
+            white-space: nowrap;
+        }
+        .td-date .time { color: var(--text-hint); margin-left: 4px; }
+        .prod-name { font-weight: 500; }
+        .prod-cat {
+            font-size: 11px;
+            color: var(--text-hint);
+            margin-top: 2px;
+        }
+        .td-total {
+            font-weight: 600;
+            color: var(--green);
+            white-space: nowrap;
+        }
+
+        /* ── Fila vacía ── */
+        .empty-row td {
+            text-align: center;
+            padding: 3rem;
+            color: var(--text-hint);
+            font-size: 13px;
+        }
+        .empty-icon { font-size: 32px; display: block; margin-bottom: 8px; }
+
+        /* ── Paginación info ── */
+        .table-footer {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 10px 16px;
+            border-top: 1px solid var(--border);
+            background: #f8faff;
+            font-size: 12px;
+            color: var(--text-muted);
+        }
+
+        /* ── Back ── */
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            margin-top: 1.5rem;
+            font-size: 13px;
+            color: var(--text-muted);
+            text-decoration: none;
+            padding: 7px 12px;
+            border-radius: var(--radius);
+            border: 1px solid var(--border);
+            background: var(--surface);
+            transition: background .12s, color .12s;
+        }
+        .back-link:hover { background: var(--blue-light); color: var(--blue); border-color: var(--blue-mid); }
+        .back-link svg { width: 13px; height: 13px; stroke: currentColor; stroke-width: 2.5; fill: none; stroke-linecap: round; stroke-linejoin: round; }
+
+        @media (max-width: 580px) {
+            .page-top { flex-direction: column; align-items: flex-start; }
+            td, thead th { padding: 10px 10px; }
+            .td-date .time { display: none; }
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <div class="brand">
+        <img src="{% static 'sistema/logo.jpeg' %}" alt="Logo">
+        
+        <div>
+            <div class="brand-name">Pescadería El Anzuelo</div>
+            <div class="brand-sub">Reporte de ventas</div>
+        </div>
+    </div>
+    <div class="header-links">
+        <a href="{% url 'admin_panel' %}" class="back-link">
+        <span class="sep">|</span>
+        <a href="/login/">Cerrar sesión</a>
+    </div>
+</header>
+
+<div class="page">
+
+    <div class="page-top">
+        <div>
+            <h1>Ventas</h1>
+            <p>Historial completo de ventas registradas.</p>
+        </div>
+    </div>
+
+    <!-- Métricas -->
+    <div class="metrics">
+        <div class="metric accent">
+            <div class="metric-label">Total ventas</div>
+            <div class="metric-value" id="metricTotal">—</div>
+            <div class="metric-sub">registros</div>
+        </div>
+        <div class="metric">
+            <div class="metric-label">Unidades vendidas</div>
+            <div class="metric-value" id="metricUnidades">—</div>
+            <div class="metric-sub">unidades totales</div>
+        </div>
+        <div class="metric green">
+            <div class="metric-label">Ingresos totales</div>
+            <div class="metric-value" id="metricIngresos">—</div>
+            <div class="metric-sub">bolivianos</div>
+        </div>
+        <div class="metric">
+            <div class="metric-label">Productos distintos</div>
+            <div class="metric-value" id="metricProductos">—</div>
+            <div class="metric-sub">en el historial</div>
+        </div>
+    </div>
+
+    <!-- Toolbar -->
+    <div class="toolbar">
+        <div class="search-wrap">
+            <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+            <input type="text" id="searchInput" placeholder="Buscar por producto...">
+        </div>
+        <a href="{% url 'reporte_ventas' %}?export=csv" class="btn-export">
+            <svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+            Exportar CSV
+        </a>
+    </div>
+
+    <!-- Tabla -->
+    <div class="table-wrap">
+        <table id="ventasTable">
+            <thead>
+                <tr>
+                    <th data-col="0"># <i class="sort-icon">↕</i></th>
+                    <th data-col="1">Producto <i class="sort-icon">↕</i></th>
+                    <th data-col="2">Cantidad <i class="sort-icon">↕</i></th>
+                    <th data-col="3">Precio unit. <i class="sort-icon">↕</i></th>
+                    <th data-col="4">Total <i class="sort-icon">↕</i></th>
+                    <th data-col="5">Fecha <i class="sort-icon">↕</i></th>
+                </tr>
+            </thead>
+            <tbody id="ventasBody">
+                {% for v in ventas %}
+                <tr data-nombre="{{ v.producto.nombre|lower }}"
+                    data-cantidad="{{ v.cantidad }}"
+                    data-precio="{{ v.producto.precio }}"
+                    data-fecha="{{ v.fecha|date:'Y-m-d H:i' }}">
+                    <td class="td-num">#{{ forloop.counter }}</td>
+                    <td>
+                        <div class="prod-name">{{ v.producto.nombre }}</div>
+                        {% if v.producto.categoria %}
+                            <div class="prod-cat">{{ v.producto.categoria }}</div>
+                        {% endif %}
+                    </td>
+                    <td><span class="td-qty">{{ v.cantidad }}</span></td>
+                    <td class="td-num">Bs {{ v.producto.precio }}</td>
+                    <td class="td-total">
+                        {% widthratio d.subtotal resumen.total_vendido 100 %}%
+                    </td>
+                    <td class="td-date">
+                        {{ v.fecha|date:"d/m/Y" }}
+                        <span class="time">{{ v.fecha|date:"H:i" }}</span>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr class="empty-row">
+                    <td colspan="6">
+                        <span class="empty-icon">📊</span>
+                        No hay ventas registradas aún.
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        <div class="table-footer">
+            <span id="footerCount">Mostrando <strong id="visibleCount">0</strong> registros</span>
+            <span id="footerTotal"></span>
+        </div>
+    </div>
+
+    <a href="{% url 'admin_panel' %}" class="back-link">
+        <svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
+        Volver al inicio
+    </a>
+
+</div>
+
+<script>
+(function () {
+    const rows   = Array.from(document.querySelectorAll('#ventasBody tr[data-nombre]'));
+    const search = document.getElementById('searchInput');
+
+    function updateMetrics(visible) {
+        let unidades = 0, ingresos = 0, prods = new Set();
+        visible.forEach(r => {
+            const qty   = parseInt(r.dataset.cantidad) || 0;
+            const price = parseFloat(r.dataset.precio)  || 0;
+            unidades += qty;
+            ingresos += qty * price;
+            prods.add(r.querySelector('.prod-name').textContent.trim());
+        });
+        document.getElementById('metricTotal').textContent     = visible.length;
+        document.getElementById('metricUnidades').textContent  = unidades;
+        document.getElementById('metricIngresos').textContent  = 'Bs ' + ingresos.toFixed(2);
+        document.getElementById('metricProductos').textContent = prods.size;
+        document.getElementById('visibleCount').textContent    = visible.length;
+        document.getElementById('footerTotal').textContent     = visible.length > 0
+            ? 'Total ingresos: Bs ' + ingresos.toFixed(2) : '';
+    }
+
+    function filterRows() {
+        const q = search.value.toLowerCase().trim();
+        const visible = [];
+        rows.forEach(r => {
+            const match = !q || r.dataset.nombre.includes(q);
+            r.style.display = match ? '' : 'none';
+            if (match) visible.push(r);
+        });
+        updateMetrics(visible);
+    }
+
+    search.addEventListener('input', filterRows);
+
+    // Ordenar columnas
+    document.querySelectorAll('thead th[data-col]').forEach(th => {
+        let asc = true;
+        th.addEventListener('click', () => {
+            const col = parseInt(th.dataset.col);
+            document.querySelectorAll('thead th').forEach(t => {
+                t.classList.remove('sorted');
+                t.querySelector('.sort-icon').textContent = '↕';
+            });
+            th.classList.add('sorted');
+            th.querySelector('.sort-icon').textContent = asc ? '↑' : '↓';
+            const tbody = document.getElementById('ventasBody');
+            const sorted = rows.slice().sort((a, b) => {
+                const aVal = a.cells[col]?.textContent.trim() || '';
+                const bVal = b.cells[col]?.textContent.trim() || '';
+                const aNum = parseFloat(aVal.replace(/[^0-9.]/g, ''));
+                const bNum = parseFloat(bVal.replace(/[^0-9.]/g, ''));
+                if (!isNaN(aNum) && !isNaN(bNum)) return asc ? aNum - bNum : bNum - aNum;
+                return asc ? aVal.localeCompare(bVal) : bVal.localeCompare(aVal);
+            });
+            sorted.forEach(r => tbody.appendChild(r));
+            asc = !asc;
+            filterRows();
+        });
+    });
+
+    // Inicializar métricas
+    updateMetrics(rows);
+})();
+</script>
+
+</body>
+</html>

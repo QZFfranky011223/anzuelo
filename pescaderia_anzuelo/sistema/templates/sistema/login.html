@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Login - Pescadería El Anzuelo</title>
+    {% load static %}
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&display=swap');
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 24px 16px;
+            background: linear-gradient(160deg, #0a2a6e 0%, #1a4db5 55%, #1e6fa8 100%);
+            font-family: 'Inter', system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+        }
+
+        .card {
+            width: 100%;
+            max-width: 400px;
+            background: #fff;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 24px 60px rgba(10, 42, 110, 0.35);
+        }
+
+        .card-header {
+            background: linear-gradient(135deg, #0a2a6e 0%, #1a4db5 100%);
+            padding: 24px 24px 20px;
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+
+        .logo-ring {
+            width: 66px;
+            height: 66px;
+            border-radius: 50%;
+            border: 3px solid rgba(255,255,255,0.35);
+            background: rgba(255,255,255,0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+
+        .logo-ring img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 50%;
+        }
+
+        .brand-text .name {
+            font-size: 15px;
+            font-weight: 900;
+            color: #fff;
+            text-transform: uppercase;
+        }
+
+        .brand-text .hook {
+            font-size: 20px;
+            font-weight: 900;
+            color: #60c4ff;
+            text-transform: uppercase;
+        }
+
+        .brand-text .tag {
+            font-size: 11px;
+            color: rgba(255,255,255,0.6);
+            margin-top: 4px;
+        }
+
+        .wave {
+            display: block;
+            background: #0a2a6e;
+            width: 100%;
+            height: 28px;
+        }
+
+        .card-body {
+            padding: 24px 28px 30px;
+        }
+
+        .login-title {
+            font-size: 19px;
+            font-weight: 800;
+            color: #0a2a6e;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .field {
+            margin-bottom: 14px;
+        }
+
+        .field label {
+            font-size: 11px;
+            font-weight: 700;
+            color: #3a5aaa;
+            display: block;
+            margin-bottom: 6px;
+        }
+
+        .field input {
+            width: 100%;
+            padding: 11px;
+            border-radius: 12px;
+            border: 1.5px solid #c0d3f7;
+            background: #f4f8ff;
+        }
+
+        .field input:focus {
+            border-color: #1a4db5;
+            outline: none;
+            background: #fff;
+        }
+
+        .btn {
+            width: 100%;
+            padding: 13px;
+            border: none;
+            border-radius: 14px;
+            font-weight: 900;
+            color: #fff;
+            background: linear-gradient(135deg, #1a4db5, #0e8fd4);
+            cursor: pointer;
+        }
+
+        .btn:hover {
+            opacity: 0.9;
+        }
+
+        .error {
+            margin-top: 14px;
+            padding: 10px;
+            border-radius: 12px;
+            background: #fff5f5;
+            color: #a32d2d;
+            text-align: center;
+        }
+
+        .status {
+            margin-top: 10px;
+            text-align: center;
+            color: #1a4db5;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+
+<div class="card">
+    <div class="card-header">
+        <div class="logo-ring">
+            <img src="{% static 'sistema/logo.jpeg' %}" alt="Logo">
+        </div>
+        <div class="brand-text">
+            <div class="name">Pescadería</div>
+            <div class="hook">El Anzuelo</div>
+            <div class="tag">Frescura, Tradición y Sabor</div>
+        </div>
+    </div>
+
+    <svg class="wave" viewBox="0 0 400 28">
+        <path d="M0,0 C80,28 160,28 200,14 C240,0 320,0 400,28 L400,0 Z" fill="#0a2a6e"/>
+    </svg>
+
+    <div class="card-body">
+        <div class="login-title">Iniciar Sesión</div>
+
+        <form method="POST" action="{% url 'login' %}">
+            {% csrf_token %}
+
+            <div class="field">
+                <label>Usuario</label>
+                <input type="text" name="username" required>
+            </div>
+
+            <div class="field">
+                <label>Contraseña</label>
+                <input type="password" name="password" required>
+            </div>
+
+            <button class="btn" type="submit" id="loginBtn">Ingresar</button>
+        </form>
+
+        <!-- MENSAJE DE ESTADO -->
+        <div id="loginStatus" class="status"></div>
+
+        {% if error %}
+            <div class="error">{{ error }}</div>
+        {% endif %}
+    </div>
+</div>
+
+<script>
+const form = document.querySelector("form");
+const btn = document.getElementById("loginBtn");
+const status = document.getElementById("loginStatus");
+
+form.addEventListener("submit", function() {
+    btn.disabled = true;
+    btn.innerText = "Ingresando...";
+    status.innerText = "Verificando usuario...";
+});
+</script>
+
+</body>
+</html>

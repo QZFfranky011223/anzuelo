@@ -1,0 +1,575 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Agregar Producto - Pescadería El Anzuelo</title>
+    {% load static %}
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&family=DM+Serif+Display&display=swap" rel="stylesheet">
+    <style>
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+        :root {
+            --azul: #185FA5;
+            --azul-light: #E6F1FB;
+            --azul-dark: #0C447C;
+            --verde: #3B6D11;
+            --verde-light: #EAF3DE;
+            --rojo: #A32D2D;
+            --rojo-light: #FCEBEB;
+            --bg: #F5F4F0;
+            --surface: #FFFFFF;
+            --border: rgba(0,0,0,0.10);
+            --border-strong: rgba(0,0,0,0.18);
+            --text: #1a1a18;
+            --text-muted: #6b6b66;
+            --text-hint: #9a9a93;
+            --radius: 10px;
+            --radius-lg: 14px;
+        }
+
+        body {
+            font-family: 'DM Sans', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+        }
+
+        /* ── Header ── */
+        header {
+            background: var(--surface);
+            border-bottom: 0.5px solid var(--border);
+            padding: 0 2rem;
+            height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .brand img {
+            height: 34px;
+            width: 34px;
+            object-fit: contain;
+        }
+        .brand-name {
+            font-family: 'DM Serif Display', serif;
+            font-size: 17px;
+            color: var(--text);
+        }
+        .brand-sub {
+            font-size: 11px;
+            color: var(--text-muted);
+            margin-top: 1px;
+        }
+        .header-nav {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .header-nav a {
+            font-size: 13px;
+            color: var(--text-muted);
+            text-decoration: none;
+            padding: 5px 10px;
+            border-radius: 6px;
+            transition: background 0.12s, color 0.12s;
+        }
+        .header-nav a:hover { background: var(--bg); color: var(--text); }
+        .header-nav .sep { color: var(--border-strong); }
+
+        /* ── Layout ── */
+        .page {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 2rem 1.25rem;
+        }
+        .page-header {
+            margin-bottom: 1.75rem;
+        }
+        .page-header h1 {
+            font-family: 'DM Serif Display', serif;
+            font-size: 26px;
+            font-weight: 400;
+            color: var(--text);
+        }
+        .page-header p {
+            font-size: 13px;
+            color: var(--text-muted);
+            margin-top: 4px;
+        }
+        .grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            align-items: start;
+        }
+        @media (max-width: 660px) {
+            .grid { grid-template-columns: 1fr; }
+        }
+
+        /* ── Card ── */
+        .card {
+            background: var(--surface);
+            border: 0.5px solid var(--border);
+            border-radius: var(--radius-lg);
+            padding: 1.5rem;
+        }
+        .card-title {
+            font-size: 11px;
+            font-weight: 600;
+            letter-spacing: 0.07em;
+            text-transform: uppercase;
+            color: var(--text-muted);
+            margin-bottom: 1.25rem;
+        }
+
+        /* ── Form fields ── */
+        .field { margin-bottom: 18px; }
+        .field:last-child { margin-bottom: 0; }
+        .field label {
+            display: block;
+            font-size: 13px;
+            font-weight: 500;
+            color: var(--text-muted);
+            margin-bottom: 6px;
+        }
+        .field input[type=text],
+        .field input[type=number],
+        .field textarea,
+        .field select {
+            width: 100%;
+            padding: 9px 12px;
+            font-family: 'DM Sans', sans-serif;
+            font-size: 14px;
+            color: var(--text);
+            background: var(--surface);
+            border: 0.5px solid var(--border-strong);
+            border-radius: var(--radius);
+            outline: none;
+            transition: border-color 0.15s, box-shadow 0.15s;
+            -webkit-appearance: none;
+        }
+        .field textarea {
+            resize: vertical;
+            min-height: 72px;
+            line-height: 1.5;
+        }
+        .field input:focus,
+        .field textarea:focus,
+        .field select:focus {
+            border-color: var(--azul);
+            box-shadow: 0 0 0 3px rgba(24,95,165,0.10);
+        }
+
+        /* ── Tipo selector ── */
+        .tipo-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+        }
+        .tipo-opt { position: relative; }
+        .tipo-opt input[type=radio] { position: absolute; opacity: 0; width: 0; height: 0; }
+        .tipo-card {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 5px;
+            padding: 12px 8px;
+            border: 0.5px solid var(--border-strong);
+            border-radius: var(--radius);
+            cursor: pointer;
+            font-size: 13px;
+            color: var(--text-muted);
+            transition: all 0.13s;
+            background: var(--surface);
+            text-align: center;
+            user-select: none;
+        }
+        .tipo-card .icon { font-size: 22px; line-height: 1; }
+        .tipo-opt input:checked + .tipo-card {
+            border-color: var(--azul);
+            background: var(--azul-light);
+            color: var(--azul-dark);
+            font-weight: 600;
+        }
+
+        /* ── Subtipo chips ── */
+        .chips-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+        }
+        .chip {
+            padding: 5px 12px;
+            border: 0.5px solid var(--border-strong);
+            border-radius: 20px;
+            font-size: 12px;
+            cursor: pointer;
+            background: var(--surface);
+            color: var(--text-muted);
+            transition: all 0.12s;
+            user-select: none;
+        }
+        .chip.active {
+            background: var(--azul-light);
+            border-color: var(--azul);
+            color: var(--azul-dark);
+            font-weight: 600;
+        }
+
+        /* ── Upload de imagen ── */
+        .upload-label {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 12px;
+            border: 0.5px dashed var(--border-strong);
+            border-radius: var(--radius);
+            cursor: pointer;
+            font-size: 13px;
+            color: var(--text-muted);
+            background: var(--bg);
+            transition: border-color 0.13s, background 0.13s;
+        }
+        .upload-label:hover { border-color: var(--azul); background: var(--azul-light); }
+        .upload-label input[type=file] { display: none; }
+        .upload-preview {
+            margin-top: 10px;
+            display: none;
+            border-radius: var(--radius);
+            overflow: hidden;
+            border: 0.5px solid var(--border);
+        }
+        .upload-preview img {
+            width: 100%;
+            max-height: 140px;
+            object-fit: cover;
+            display: block;
+        }
+
+        /* ── Botón principal ── */
+        .btn-primary {
+            display: block;
+            width: 100%;
+            padding: 11px;
+            background: var(--azul);
+            color: #fff;
+            font-family: 'DM Sans', sans-serif;
+            font-size: 14px;
+            font-weight: 600;
+            border: none;
+            border-radius: var(--radius);
+            cursor: pointer;
+            transition: background 0.15s, transform 0.1s;
+            letter-spacing: 0.01em;
+        }
+        .btn-primary:hover { background: var(--azul-dark); }
+        .btn-primary:active { transform: scale(0.98); }
+
+        /* ── Mensajes Django ── */
+        .alert {
+            padding: 10px 14px;
+            border-radius: var(--radius);
+            font-size: 13px;
+            margin-bottom: 1.25rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .alert-success {
+            background: var(--verde-light);
+            color: var(--verde);
+            border: 0.5px solid #C0DD97;
+        }
+        .alert-error {
+            background: var(--rojo-light);
+            color: var(--rojo);
+            border: 0.5px solid #F7C1C1;
+        }
+        .dot {
+            width: 7px; height: 7px;
+            border-radius: 50%;
+            flex-shrink: 0;
+        }
+        .dot-green { background: var(--verde); }
+        .dot-red   { background: var(--rojo); }
+
+        /* ── Vista previa tarjeta producto ── */
+        .preview-label {
+            font-size: 11px;
+            font-weight: 600;
+            letter-spacing: 0.07em;
+            text-transform: uppercase;
+            color: var(--text-muted);
+            margin-bottom: 12px;
+        }
+        .prod-preview {
+            border: 0.5px solid var(--border);
+            border-radius: var(--radius);
+            overflow: hidden;
+            background: var(--surface);
+        }
+        .prod-preview-img {
+            width: 100%;
+            height: 110px;
+            background: var(--bg);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 36px;
+            overflow: hidden;
+        }
+        .prod-preview-img img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        .prod-preview-body {
+            padding: 10px 12px;
+        }
+        .prod-preview-name {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text);
+            min-height: 18px;
+        }
+        .prod-preview-desc {
+            font-size: 12px;
+            color: var(--text-muted);
+            margin-top: 3px;
+            min-height: 16px;
+            line-height: 1.4;
+        }
+        .prod-preview-price {
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--azul);
+            margin-top: 6px;
+        }
+        .prod-preview-badge {
+            display: inline-block;
+            font-size: 11px;
+            padding: 2px 8px;
+            border-radius: 10px;
+            background: var(--azul-light);
+            color: var(--azul-dark);
+            margin-top: 6px;
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <div class="brand">
+        <img src="{% static 'sistema/logo.jpeg' %}" alt="Logo">
+        <div>
+            <div class="brand-name">El Anzuelo</div>
+            <div class="brand-sub">Panel de administración</div>
+        </div>
+    </div>
+    <nav class="header-nav">
+        <a href="{% url 'admin_panel' %}">← Volver al inicio</a>
+        <span class="sep">|</span>
+        <a href="/logout/">Cerrar sesión</a>
+    </nav>
+</header>
+
+<div class="page">
+    <div class="page-header">
+        <h1>Agregar producto</h1>
+        <p>El producto aparecerá en el menú del sistema de pedidos al guardarse.</p>
+    </div>
+
+    {% if messages %}
+        {% for msg in messages %}
+            <div class="alert {% if msg.tags == 'success' %}alert-success{% else %}alert-error{% endif %}">
+                <span class="dot {% if msg.tags == 'success' %}dot-green{% else %}dot-red{% endif %}"></span>
+                {{ msg }}
+            </div>
+        {% endfor %}
+    {% endif %}
+
+    <div class="grid">
+
+        <!-- Formulario -->
+        <div class="card">
+            <div class="card-title">Datos del producto</div>
+
+            <form method="POST" enctype="multipart/form-data" id="productoForm">
+                {% csrf_token %}
+                <input type="hidden" name="subtipo" id="subtipoInput" value="plato">
+
+                <div class="field">
+                    <label for="nombre">Nombre</label>
+                    <input type="text" name="nombre" id="nombre"
+                           placeholder="Ej: Ceviche mixto"
+                           value="{{ form.nombre.value|default:'' }}"
+                           required autocomplete="off">
+                </div>
+
+                <div class="field">
+                    <label for="descripcion">Descripción</label>
+                    <textarea name="descripcion" id="descripcion"
+                              placeholder="Ej: Con leche de tigre, canchita y choclo">{{ form.descripcion.value|default:'' }}</textarea>
+                </div>
+
+                <div class="field">
+                    <label for="precio">Precio (Bs)</label>
+                    <input type="number" name="precio" id="precio"
+                           placeholder="0.00" step="0.01" min="0"
+                           value="{{ form.precio.value|default:'' }}"
+                           required>
+                </div>
+
+                <div class="field">
+                    <label>Tipo</label>
+                    <div class="tipo-grid">
+                        <label class="tipo-opt">
+                            <input type="radio" name="tipo" value="plato" checked>
+                            <div class="tipo-card">
+                                <span class="icon">🍽</span>
+                                Plato
+                            </div>
+                        </label>
+                        <label class="tipo-opt">
+                            <input type="radio" name="tipo" value="bebida">
+                            <div class="tipo-card">
+                                <span class="icon">🥤</span>
+                                Bebida
+                            </div>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="field" id="subtipoWrap">
+                    <label>Subcategoría</label>
+                    <div class="chips-row" id="chipsRow">
+                        <span class="chip active" data-val="plato">Plato principal</span>
+                    </div>
+                </div>
+
+                <div class="field">
+                    <label>Imagen</label>
+                    <label class="upload-label">
+                        <span>📷</span>
+                        <span id="fileName">Seleccionar imagen...</span>
+                        <input type="file" name="imagen" id="imgInput" accept="image/*">
+                    </label>
+                    <div class="upload-preview" id="uploadPreview">
+                        <img id="previewThumb" src="" alt="Vista previa">
+                    </div>
+                </div>
+
+                <div class="field">
+                    <button type="submit" class="btn-primary">Guardar producto</button>
+                </div>
+            </form>
+        </div>
+
+        <!-- Vista previa -->
+        <div>
+            <div class="preview-label">Vista previa en el menú</div>
+            <div class="prod-preview">
+                <div class="prod-preview-img" id="prevImgWrap">
+                    <span id="prevEmoji">🍽</span>
+                    <img id="prevImg" src="" alt="" style="display:none;">
+                </div>
+                <div class="prod-preview-body">
+                    <div class="prod-preview-name" id="prevNombre">Nombre del producto</div>
+                    <div class="prod-preview-desc" id="prevDesc">Descripción breve</div>
+                    <div class="prod-preview-price" id="prevPrecio">Bs 0.00</div>
+                    <div class="prod-preview-badge" id="prevBadge">plato principal</div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<script>
+(function () {
+    const subtipos = {
+        plato: [{ val: 'plato', label: 'Plato principal' }],
+        bebida: [
+            { val: 'soda',  label: 'Soda' },
+            { val: 'jugo',  label: 'Jugo natural' },
+            { val: 'otra',  label: 'Otra bebida' }
+        ]
+    };
+    const emojiMap = { plato: '🍽', soda: '🥤', jugo: '🍹', otra: '🫙' };
+
+    let selectedSub = 'plato';
+
+    function renderChips(tipo) {
+        const row = document.getElementById('chipsRow');
+        row.innerHTML = '';
+        subtipos[tipo].forEach((s, i) => {
+            const chip = document.createElement('span');
+            chip.className = 'chip' + (i === 0 ? ' active' : '');
+            chip.dataset.val = s.val;
+            chip.textContent = s.label;
+            chip.addEventListener('click', () => {
+                row.querySelectorAll('.chip').forEach(c => c.classList.remove('active'));
+                chip.classList.add('active');
+                selectedSub = s.val;
+                document.getElementById('subtipoInput').value = selectedSub;
+                document.getElementById('prevBadge').textContent = s.label.toLowerCase();
+                if (!document.getElementById('prevImg').style.display || document.getElementById('prevImg').style.display === 'none') {
+                    document.getElementById('prevEmoji').textContent = emojiMap[selectedSub] || '🍽';
+                }
+            });
+            row.appendChild(chip);
+        });
+        selectedSub = subtipos[tipo][0].val;
+        document.getElementById('subtipoInput').value = selectedSub;
+        document.getElementById('prevBadge').textContent = subtipos[tipo][0].label.toLowerCase();
+        document.getElementById('prevEmoji').textContent = emojiMap[selectedSub] || '🍽';
+    }
+
+    document.querySelectorAll('input[name=tipo]').forEach(r => {
+        r.addEventListener('change', () => renderChips(r.value));
+    });
+
+    // Vista previa en tiempo real
+    document.getElementById('nombre').addEventListener('input', function () {
+        document.getElementById('prevNombre').textContent = this.value || 'Nombre del producto';
+    });
+    document.getElementById('descripcion').addEventListener('input', function () {
+        document.getElementById('prevDesc').textContent = this.value || 'Descripción breve';
+    });
+    document.getElementById('precio').addEventListener('input', function () {
+        const v = parseFloat(this.value);
+        document.getElementById('prevPrecio').textContent = 'Bs ' + (isNaN(v) ? '0.00' : v.toFixed(2));
+    });
+
+    // Preview de imagen
+    document.getElementById('imgInput').addEventListener('change', function () {
+        const file = this.files[0];
+        if (!file) return;
+        document.getElementById('fileName').textContent = file.name;
+        const reader = new FileReader();
+        reader.onload = e => {
+            const thumb = document.getElementById('previewThumb');
+            thumb.src = e.target.result;
+            document.getElementById('uploadPreview').style.display = 'block';
+            const prevImg = document.getElementById('prevImg');
+            prevImg.src = e.target.result;
+            prevImg.style.display = 'block';
+            document.getElementById('prevEmoji').style.display = 'none';
+        };
+        reader.readAsDataURL(file);
+    });
+})();
+</script>
+
+</body>
+</html>
